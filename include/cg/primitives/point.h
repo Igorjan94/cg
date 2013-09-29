@@ -95,4 +95,16 @@ namespace cg
       res += delta;
       return res;
    }
+
+   template <class Scalar>
+   Scalar dist_2(point_2t<Scalar> const& a, point_2t<Scalar> const& b)
+   {
+       return (a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y);
+   }
+
+   template <class Scalar>
+   Scalar dist(point_2t<Scalar> const& a, point_2t<Scalar> const& b)
+   {
+       return sqrt(dist(a, b));
+   }
 }
