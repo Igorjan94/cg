@@ -41,8 +41,8 @@ struct douglasPeucker_viewer : cg::visualization::viewer_adapter
 
     void print(cg::visualization::printer_type & p) const
     {
-        p.corner_stream() << "douglasPeuckering polyline. DouglasPeucker algorithm.\r\n"
-                          << "Double click to clear, right-click to add point.";
+        p.corner_stream() << "Simplifying polyline. DouglasPeucker algorithm" << cg::visualization::endl;
+        p.corner_stream() << "Double click to clear, right-click to add point.";
     }
 
     bool on_press(const point_2f & p)

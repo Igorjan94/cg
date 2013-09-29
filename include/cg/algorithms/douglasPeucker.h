@@ -8,7 +8,7 @@ namespace cg
 {
 
     template<class Scalar>
-    double dist(cg::point_2t<Scalar> const & a, cg::segment_2t<Scalar> const & s)
+    Scalar dist(cg::point_2t<Scalar> const & a, cg::segment_2t<Scalar> const & s)
     {
         Scalar R1 =  cg::dist_2(a,    s[0]),
                R2 =  cg::dist_2(a,    s[1]),
