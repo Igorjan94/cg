@@ -105,6 +105,6 @@ namespace cg
    template <class Scalar>
    Scalar dist(point_2t<Scalar> const& a, point_2t<Scalar> const& b)
    {
-       return sqrt(dist(a, b));
+       return sqrt(dist_2(a, b));
    }
 }
