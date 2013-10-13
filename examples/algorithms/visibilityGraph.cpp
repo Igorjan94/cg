@@ -27,6 +27,15 @@ void draw_vector(Iter a, Iter c, cg::visualization::drawer_type & drawer)
         drawer.draw_line(*a, *b);
 }
 
+template <class Iter>
+void draw_vector_of_segments(Iter a, Iter c, cg::visualization::drawer_type & drawer)
+{
+    if (a == c)
+        return;
+    for ( ;a != c; a++)
+        drawer.draw_line((*a)[0], (*a)[1]);
+}
+
 struct visibilityGraph_viewer : cg::visualization::viewer_adapter
 {
     visibilityGraph_viewer(){}
@@ -45,7 +54,7 @@ struct visibilityGraph_viewer : cg::visualization::viewer_adapter
             draw_vector(input_points[i].begin(), input_points[i].end(), drawer);
         draw_vector(contour.begin(), contour.end(), drawer);
         drawer.set_color(Qt::yellow);
-        draw_vector(output_points.begin(), output_points.end(), drawer);
+        draw_vector_of_segments(output_points.begin(), output_points.end(), drawer);
     }
 
     void print(cg::visualization::printer_type & p) const
@@ -63,7 +72,7 @@ struct visibilityGraph_viewer : cg::visualization::viewer_adapter
             input_points.push_back(contour);
             output_points.clear();
             contour.clear();
-           // cg::douglasPeucker(input_points.begin(), input_points.end(), 5.0, std::back_inserter(output_points));
+            cg::visibilityGraph(input_points.begin(), input_points.end(), std::back_inserter(output_points), 5.0);
         } else
             contour.add_point(p);
         return true;
@@ -89,9 +98,9 @@ struct visibilityGraph_viewer : cg::visualization::viewer_adapter
 
 private:
 
-    cg::contour_2f contour;
+    contour_2f contour;
     std::vector<contour_2f> input_points;
-    std::vector<point_2f> output_points;
+    std::vector<cg::segment_2f> output_points;
 };
 
 int main(int argc, char ** argv)
