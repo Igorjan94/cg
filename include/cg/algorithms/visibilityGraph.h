@@ -48,7 +48,8 @@ namespace cg
             {
                 p2 = 0;
                 for (auto contourIter = begin; contourIter != end; contourIter++)           //other contour
-                    if (contourIter != iter)                                                //if contour != contour with point
+                    if (contourIter == iter)
+                        p2 += (*iter).size(); else//if contour != contour with point
                         for (auto otherPoint = (*contourIter).begin();
                                   otherPoint != (*contourIter).end(); otherPoint++, p2++)//other point
                             if (!has_intersection_list_of_contours_segment(begin, end, cg::segment_2t<Scalar>(*pointIter, *otherPoint)))
