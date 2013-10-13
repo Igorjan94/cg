@@ -17,6 +17,8 @@ namespace cg
    template <class Scalar>
    struct contour_2t
    {
+      contour_2t(){}
+
       contour_2t(std::vector<point_2t<Scalar> > const& pts) : pts_(pts)
       {}
 
@@ -67,6 +69,11 @@ namespace cg
       point_2t<Scalar> & operator [] (size_t idx)
       {
          return pts_[idx];
+      }
+
+      void clear()
+      {
+          pts_.clear();
       }
 
    private:
