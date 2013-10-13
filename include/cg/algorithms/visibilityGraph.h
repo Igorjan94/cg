@@ -8,11 +8,12 @@
 
 namespace cg
 {
-    template <class FwdIter, class OutIter, class Scalar>
-    void visibilityGraph(FwdIter begin, FwdIter end, OutIter it, Scalar s)
+    template <class FwdIter, class Scalar>
+    std::vector<cg::segment_2t<Scalar>> visibilityGraph(FwdIter begin, FwdIter end, Scalar s)
     {
+        std::vector<cg::segment_2t<Scalar>> vec;
         if (begin == end)
-            return;
+            return std::move(vec);
         for (auto iter = begin; iter != end; iter++)                                        //contour
             for (auto pointIter = (*iter).begin(); pointIter != (*iter).end(); pointIter++) //point
                 for (auto contourIter = begin; contourIter != end; contourIter++)           //other contour
@@ -24,10 +25,13 @@ namespace cg
                             cg::segment_2t<Scalar> segment(*pointIter, *otherPoint);
                             for (auto checkContour = begin; checkContour != end; checkContour++)
                                 for (auto a = (*checkContour).begin(), b = a + 1; b != (*checkContour).end(); a++, b++)
-                                    has_intersection &= cg::has_intersection(segment, {*a, *b});
+                                    if (segment[0] != *a && segment[0] != *b &&
+                                        segment[1] != *a && segment[1] != *b)
+                                    has_intersection |= cg::has_intersection(segment, {*a, *b});
                             if (!has_intersection)
-                                *it++ = segment;
+                                vec.push_back(segment);
                         }
+        return std::move(vec);
     }
 
 } //namespace cg;

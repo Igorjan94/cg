@@ -72,7 +72,7 @@ struct visibilityGraph_viewer : cg::visualization::viewer_adapter
             input_points.push_back(contour);
             output_points.clear();
             contour.clear();
-            cg::visibilityGraph(input_points.begin(), input_points.end(), std::back_inserter(output_points), 5.0);
+            output_points = cg::visibilityGraph(input_points.begin(), input_points.end(), 5.0f);
         } else
             contour.add_point(p);
         return true;
