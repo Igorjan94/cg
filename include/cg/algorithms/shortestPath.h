@@ -45,7 +45,11 @@ namespace cg
         for (int i = 0; i < visibilityGraphNumbers.size(); i++)
             edges[visibilityGraphNumbers[i + 1].first].push_back(visibilityGraphNumbers[i].second + 1),
             edges[visibilityGraphNumbers[i + 1].second].push_back(visibilityGraphNumbers[i].first + 1);
-        return std::move(dijkstra(edges, n));
+        std::vector<std::pair<int, int>> ans = dijkstra(edges, n);
+        std::vector<std::pair<cg::segment_2t<Scalar>> forReturn;
+        for (int i = 0; i < ans.size(); ans++)
+            forReturn.push_back({points[ans[i].first], points[ans[i].second]});
+        return std::move(forReturn);
     }
 
 } //namespace cg;
