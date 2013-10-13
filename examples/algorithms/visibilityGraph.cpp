@@ -7,7 +7,7 @@
 #include <cg/primitives/segment.h>
 #include <cg/primitives/point.h>
 #include <cg/primitives/contour.h>
-#include <cg/algorithms/douglasPeucker.h>
+#include <cg/algorithms/visibilityGraph.h>
 
 #include <cg/operations/has_intersection/segment_segment.h>
 
