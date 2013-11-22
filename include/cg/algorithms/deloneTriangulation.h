@@ -34,7 +34,7 @@ namespace cg
     void addPointInTriangulation(point_2t<Scalar> &p, vector<face_2t<Scalar>> &points)
     {
         int i = 0;
-        while (i < points.size() && !cg::contains(points[i].triangle(), p))
+        while (i < points.size() && !cg::contains(points[i], p))
             i++;
         addPoint(i, p, points);
     }
