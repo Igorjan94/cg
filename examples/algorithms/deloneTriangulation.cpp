@@ -23,7 +23,8 @@ void drawTriangles(Iter a, Iter c, cg::visualization::drawer_type & drawer)
         for (int i = 0; i < 3; i++)
         {
             face_2f as = *a;
-            drawer.draw_line(as.side(i));
+            if (!as.isInf)
+                drawer.draw_line(as.side(i));
         }
 }
 

@@ -1,5 +1,7 @@
 #pragma once
 
+#include <iostream>
+
 #include "cg/primitives/triangle.h"
 #include "cg/primitives/point.h"
 #include "cg/operations/orientation.h"
@@ -25,16 +27,17 @@ namespace cg
         face_2t<Scalar>* twins[3];
     public:
         bool isInf;
-        face_2t(point_2t<Scalar> a, point_2t<Scalar> b, point_2t<Scalar> &c)
+        face_2t(point_2t<Scalar> a, point_2t<Scalar> b, point_2t<Scalar> c)
             :t(a, b, c)
         {
             isInf = false;
         }
 
-        face_2t(point_2t<Scalar> &a, point_2t<Scalar> &b)
+        face_2t(point_2t<Scalar> a, point_2t<Scalar> b)
         {
             isInf = true;
-            t(a, b, {0, 0});
+            point_2t<Scalar> p(0, 0);
+            t = triangle_2t<Scalar>(a, b, p);
         }
 
         triangle_2t<Scalar> &triangle()
@@ -61,10 +64,10 @@ namespace cg
     };
 
     template<class Scalar>
-    bool contains(face_2t<Scalar>& f, point_2t<Scalar>& p)
+    bool faceContains(face_2t<Scalar>& f, point_2t<Scalar>& p)
     {
         if (f.isInf)
-            return cg::orientation(f[0], f[1], p) == cg::CG_LEFT;
+            return cg::orientation(f[0], f[1], p) == cg::CG_RIGHT;
         return cg::contains(f.triangle(), p);
     }
 }
