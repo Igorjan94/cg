@@ -10,3 +10,6 @@ target_link_libraries(visibilityGraph visualization ${GMP_LIBRARIES})
 
 add_executable(shortestPath shortestPath.cpp)
 target_link_libraries(shortestPath visualization ${GMP_LIBRARIES})
+
+add_executable(deloneTriangulation deloneTriangulation.cpp)
+target_link_libraries(deloneTriangulation visualization ${GMP_LIBRARIES})
