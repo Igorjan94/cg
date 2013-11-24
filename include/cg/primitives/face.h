@@ -89,6 +89,11 @@ namespace cg
             twins[2] = t3;
         }
 
+        void notInf()
+        {
+            isInf = false;
+        }
+
         void replaceTwin(face_2t<Scalar> from, face_2t<Scalar> *to)
         {
             for (int i = 0; i < 3; i++)
@@ -128,8 +133,18 @@ namespace cg
 
     template<class Scalar>
     bool inCircle(point_2t<Scalar> const &a, point_2t<Scalar> const &b, point_2t<Scalar> const &c,
-                  point_2t<Scalar> const &d)
+                  point_2t<Scalar> const &d, bool isInf)
     {
+        if (isInf)
+        {
+            point_2t<Scalar> temp = b == point_2t<Scalar>({0.0, 0.0}) ? c : b;
+            std::cout << "all is ok\n";
+            std::cout << d.x << " " << d.y << "\n";
+            std::cout << temp.x << " " << temp.y << "\n";
+            std::cout << a.x << " " << a.y << "\n";
+            std::cout << "all is ok>\n";
+            return orientation(d, temp, a) == CG_RIGHT;
+        }
         Scalar a00 = (a.x - d.x);
         Scalar a01 = (a.y - d.y);
         Scalar a02 = (a.x * a.x - d.x * d.x) + (a.y * a.y - d.y * d.y);
@@ -153,12 +168,14 @@ namespace cg
     }
 
     template<class Scalar>
-    void flip(face_2t<Scalar> &f, face_2t<Scalar> &g, int i1)
+    void flip(face_2t<Scalar> &f, face_2t<Scalar> &g)
     {
-        i1 %= 3;
-        if (!g.isInf && !f.isInf)
+        if (!(g.isInf ^ f.isInf))
         {
-            int i2 = 0;
+            f.writeln();
+            g.writeln();
+            std::cout << "infinity: " << ((int)(g.isInf)) << "\n";
+            int i2 = -1;
             for (int i = 0; i < 3; i++)
             {
                 bool ok = false;
@@ -170,23 +187,39 @@ namespace cg
                     break;
                 }
             }
-            if (inCircle(f[0], f[1], f[2], g[i2]))
+            int i1 = -1;
+            for (int i = 0; i < 3; i++)
             {
+                bool ok = false;
+                for (int j = 0; j < 3; j++)
+                    ok |= g[j] == f[i];
+                if (!ok)
+                {
+                    i1 = i;
+                    break;
+                }
+            }
+            if (i1 != -1 && i2 != -1 && inCircle(f[i1], f[i1 + 1], f[i1 + 2], g[i2], g.isInf))
+            {
+                std::cout << "f::i1= " << f[i1].x << " " << f[i1].y << "\n";
+                std::cout << "g::i2= " << g[i2].x << " " << g[i2].y << "\n";
                 std::cout << "flipping...\n";
-                g[i2 + 2] = f[i1 + 2];
-                f[i1 + 1] = g[i2];
+                g[i2 + 2] = f[i1];
+                f[i1 + 2] = g[i2];
+                if (g.isInf)
+                    g.notInf();
                 g.twin(i2 + 2)->replaceTwin(g, &f);
-                f.twin(i1 + 1)->replaceTwin(f, &g);
+                f.twin(i1 + 2)->replaceTwin(f, &g);
 
-                g.setTwin(i2 + 1, f.twin(i1 + 1));
-                f.setTwin(i1, g.twin(i2 + 2));
+                g.setTwin(i2 + 1, f.twin(i1 + 2));
+                f.setTwin(i1 + 1, g.twin(i2 + 2));
                 g.setTwin(i2 + 2, f);
-                f.setTwin(i1 + 1, g);
+                f.setTwin(i1 + 2, g);
 
-                flip(f, *(f.twin(i1)),     i1);
-                flip(f, *(f.twin(i1 + 2)), i1 + 2);
-                flip(g, *(f.twin(i2)),     i2);
-                flip(g, *(f.twin(i2 + 1)), i2 + 1);
+                flip(*(f.twin(i1)), f);
+                flip(f, *(f.twin(i1 + 1)));
+                flip(g, *(g.twin(i2)));
+                flip(g, *(g.twin(i2 + 1)));
             }
         }
     }
