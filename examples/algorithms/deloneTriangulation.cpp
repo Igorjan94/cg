@@ -20,17 +20,18 @@ template <class Iter>
 void drawTriangles(Iter a, Iter c, cg::visualization::drawer_type & drawer) const
 {
     for (; a != c; a++)
-        for (int i = 0; i < 3; i++)
-        {
-            face_2f as = *a;
-            if (!as.isInf)
-            {
-                drawer.set_color(Qt::white);
-                drawer.draw_line(as.side(i));
-                drawer.set_color(Qt::blue);
-                draw_circle(drawer, as.triangle());
-            }
-        }
+    {
+        face_2f as = *a;
+        as.writeln();
+        if (!as.isInf)
+            for (int i = 0; i < 3; i++)
+                {
+                    drawer.set_color(Qt::white);
+                    drawer.draw_line(as.side(i));
+                    drawer.set_color(Qt::blue);
+                    draw_circle(drawer, as.triangle());
+                }
+    }
 }
 ///copied from qwerty787788
     double area(triangle_2f const & tr) const {

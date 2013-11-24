@@ -38,7 +38,7 @@ namespace cg
         face_2t(point_2t<Scalar> a, point_2t<Scalar> b)
         {
             isInf = true;
-            point_2t<Scalar> p(0, 0);
+            point_2t<Scalar> p(0.0, 0.0);
             t = triangle_2t<Scalar>(a, b, p);
         }
 
@@ -47,19 +47,34 @@ namespace cg
             return t;
         }
 
-        point_2t<Scalar> operator[](int index) const
+        point_2t<Scalar>& operator[](int index)
         {
-            return t[index];
+            return t[index % 3];
+        }
+
+        point_2t<Scalar>const& operator[](int index)const
+        {
+            return t[index % 3];
         }
 
         segment_2t<Scalar> side(int index)
         {
-            return t.side(index);
+            return t.side(index % 3);
         }
 
         face_2t<Scalar> *twin(int index)
         {
-            return twins[index];
+            return twins[index % 3];
+        }
+
+        void setTwin(int index, face_2t<Scalar>& f)
+        {
+            twins[index % 3] = &f;
+        }
+
+        void setTwin(int index, face_2t<Scalar>* f)
+        {
+            twins[index % 3] = f;
         }
 
         void addTwins(face_2t<Scalar> *t1, face_2t<Scalar> *t2, face_2t<Scalar> *t3)
@@ -68,24 +83,61 @@ namespace cg
             twins[1] = t2;
             twins[2] = t3;
         }
+
+        void replaceTwin(face_2t<Scalar> from, face_2t<Scalar> *to)
+        {
+            for (int i = 0; i < 3; i++)
+                if (*twins[i] == from)
+                {
+                    twins[i] = to;
+                    return;
+                }
+        }
+
+        bool operator==(face_2t<Scalar> const &a) const
+        {
+            bool equals = true;
+            for (int i = 0; i < 3 && equals; i++)
+                equals &= t[i] == a[i];
+            return equals;
+        }
+
+        void writeln2()
+        {
+            std::cout << "face : ";
+            for (int i = 0; i < 3; i++)
+                std::cout << t[i].x << " " << t[i].y << ((i == 2) ? "\n" : ", ");
+            std::cout << "twins: ";
+            for (int j = 0; j < 3; j++)
+                twins[j]->writeln();
+            std::cout << "\n";
+        }
+
+        void writeln()
+        {
+            if (isInf)
+                std::cout << "INF ";
+            for (int i = 0; i < 3; i++)
+                std::cout << t[i].x << " " << t[i].y << ((i == 2) ? "\n" : ", ");
+        }
     };
 
     template<class Scalar>
     bool inCircle(point_2t<Scalar> const &a, point_2t<Scalar> const &b, point_2t<Scalar> const &c,
                   point_2t<Scalar> const &d)
     {
-        double a00 = (a.x - d.x);
-        double a01 = (a.y - d.y);
-        double a02 = (a.x * a.x - d.x * d.x) + (a.y * a.y - d.y * d.y);
-        double a10 = (b.x - d.x);
-        double a11 = (b.y - d.y);
-        double a12 = (b.x * b.x - d.x * d.x) + (b.y * b.y - d.y * d.y);
-        double a20 = (c.x - d.x);
-        double a21 = (c.y - d.y);
-        double a22 = (c.x * c.x - d.x * d.x) + (c.y * c.y - d.y * d.y);
-        double det =  a00 * a11 * a22 + a01 * a12 * a20 + a02 * a10 * a21 -
+        Scalar a00 = (a.x - d.x);
+        Scalar a01 = (a.y - d.y);
+        Scalar a02 = (a.x * a.x - d.x * d.x) + (a.y * a.y - d.y * d.y);
+        Scalar a10 = (b.x - d.x);
+        Scalar a11 = (b.y - d.y);
+        Scalar a12 = (b.x * b.x - d.x * d.x) + (b.y * b.y - d.y * d.y);
+        Scalar a20 = (c.x - d.x);
+        Scalar a21 = (c.y - d.y);
+        Scalar a22 = (c.x * c.x - d.x * d.x) + (c.y * c.y - d.y * d.y);
+        Scalar det =  a00 * a11 * a22 + a01 * a12 * a20 + a02 * a10 * a21 -
                      (a20 * a11 * a02 + a21 * a12 * a00 + a01 * a10 * a22);
-        return det > 0;
+        return det < 0;
     }
 
     template<class Scalar>
@@ -97,8 +149,46 @@ namespace cg
     }
 
     template<class Scalar>
-    void flip(face_2t<Scalar> &f, face_2t<Scalar> &g)
+    void flip(face_2t<Scalar> &f, face_2t<Scalar> &g, int i1)
     {
+        if (!g.isInf && !f.isInf)
+        {
+            int i2 = 0;
+            for (int i = 0; i < 3; i++)
+            {
+                bool ok = false;
+                for (int j = 0; j < 3; j++)
+                    ok |= g[i] == f[j];
+                if (!ok)
+                {
+                    i2 = i;
+                    break;
+                }
+            }
+            std::cout << "flip???\n";
+            std::cout << f[0].x << " " << f[0].y << ", ";
+            std::cout << f[1].x << " " << f[1].y << ", ";
+            std::cout << f[2].x << " " << f[2].y << ", ";
+            std::cout << g[i2].x << " " << g[i2].y << "\n";
+            if (inCircle(f[0], f[1], f[2], g[i2]))
+            {
+                std::cout << "need flip...\n";
+                g[i2 + 2] = f[i1 + 2];
+                f[i1 + 1] = g[i2];
+                g.twin(i2 + 2)->replaceTwin(g, &f);
+                f.twin(i1 + 1)->replaceTwin(f, &g);
 
+                g.setTwin(i2 + 1, f.twin(i1 + 1));
+                f.setTwin(i1, g.twin(i2 + 2));
+                g.setTwin(i2 + 2, f);
+                f.setTwin(i1 + 1, g);
+            }
+        }
     }
 }
+/*-150, -150
+ *-5, 170
+ *200, 130
+ *120, 10
+ *
+ */
