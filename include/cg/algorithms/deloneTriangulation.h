@@ -92,18 +92,15 @@ namespace cg
             points[1] = points[2];
             points[2] = p;
         }
-        face_2t<Scalar> f1(points[0], points[1], points[2]),
-                        f2(points[1], points[0]),
-                        f3(points[2], points[1]),
-                        f4(points[0], points[2]);
-        faces.push_back(&f1);
-        faces.push_back(&f2);
-        faces.push_back(&f3);
-        faces.push_back(&f4);
+        faces.push_back(new face_2t<Scalar>(points[0], points[1], points[2]));
+        faces.push_back(new face_2t<Scalar>(points[1], points[0]));
+        faces.push_back(new face_2t<Scalar>(points[2], points[1]));
+        faces.push_back(new face_2t<Scalar>(points[0], points[2]));
         faces[0]->addTwins(faces[1], faces[2], faces[3]);
         faces[1]->addTwins(faces[0], faces[3], faces[2]);
         faces[2]->addTwins(faces[0], faces[1], faces[3]);
         faces[3]->addTwins(faces[0], faces[2], faces[1]);
+
         for (int i = 3; i < sz; i++)
         {
             point_2t<Scalar> p = points[i];
@@ -112,7 +109,6 @@ namespace cg
             face_2t<Scalar> t = **it;
             face_2t<Scalar> *t1, *t2, *t3;
             t1 = new face_2t<Scalar>(t[0], t[1], p);
-            t1->addTwins(t.twin(0), t2, t3);
             if (t.isInf)
             {
                 t2 = new face_2t<Scalar>(p, t[1]);
@@ -126,10 +122,10 @@ namespace cg
                 t2->addTwins(t.twin(1), t3, t1);
                 t3->addTwins(t.twin(2), t1, t2);
             }
+            t1->addTwins(t.twin(0), t2, t3);
             t.twin(0)->replaceTwin(t, t1);
             t.twin(1)->replaceTwin(t, t2);
             t.twin(2)->replaceTwin(t, t3);
-
             flip(*t1, *(t1->twin(0)), 0);
             flip(*t2, *(t2->twin(0)), 0);
             flip(*t3, *(t3->twin(0)), 0);
@@ -137,17 +133,10 @@ namespace cg
             *it = t1;
             faces.push_back(t2);
             faces.push_back(t3);
-
-            std::cout << "\nout:\n";
-            for (auto it : faces)
-                it->writeln();
-            std::cout << "end\n\n";
         }
         for (auto it : faces)
             if (!it->isInf)
                 to.push_back(*it);
-//        for (auto it = faces.begin(); it != faces.end(); it++)
-  //          delete(*it);
         faces.clear();
         return to;
     }

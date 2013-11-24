@@ -26,7 +26,7 @@ namespace cg
         triangle_2t<Scalar> t;
         face_2t<Scalar>* twins[3];
     public:
-        bool isInf;
+        bool isInf = false;
         face_2t(){}
 
         face_2t(point_2t<Scalar> a, point_2t<Scalar> b, point_2t<Scalar> c)
@@ -43,6 +43,11 @@ namespace cg
         }
 
         triangle_2t<Scalar> &triangle()
+        {
+            return t;
+        }
+
+        triangle_2t<Scalar> const &triangle() const
         {
             return t;
         }
@@ -96,10 +101,9 @@ namespace cg
 
         bool operator==(face_2t<Scalar> const &a) const
         {
-            bool equals = true;
-            for (int i = 0; i < 3 && equals; i++)
-                equals &= t[i] == a[i];
-            return equals;
+            if (isInf ^ a.isInf)
+                return false; else
+                return t == a.triangle();
         }
 
         void writeln2()
@@ -165,14 +169,9 @@ namespace cg
                     break;
                 }
             }
-            std::cout << "flip???\n";
-            std::cout << f[0].x << " " << f[0].y << ", ";
-            std::cout << f[1].x << " " << f[1].y << ", ";
-            std::cout << f[2].x << " " << f[2].y << ", ";
-            std::cout << g[i2].x << " " << g[i2].y << "\n";
             if (inCircle(f[0], f[1], f[2], g[i2]))
             {
-                std::cout << "need flip...\n";
+                std::cout << "flipping...\n";
                 g[i2 + 2] = f[i1 + 2];
                 f[i1 + 1] = g[i2];
                 g.twin(i2 + 2)->replaceTwin(g, &f);

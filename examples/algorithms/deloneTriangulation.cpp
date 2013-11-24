@@ -22,7 +22,7 @@ void drawTriangles(Iter a, Iter c, cg::visualization::drawer_type & drawer) cons
     for (; a != c; a++)
     {
         face_2f as = *a;
-        as.writeln();
+        //as.writeln();
         if (!as.isInf)
             for (int i = 0; i < 3; i++)
                 {
