@@ -79,8 +79,9 @@ namespace cg
         points.push_back({-150, -150});
         points.push_back({0, 150});
         points.push_back({150, -150});
-        points.push_back({0, 0});*/
-
+        points.push_back({0, 0});
+        points.push_back({0, -50});
+*/
         int sz = points.size();
         if (sz < 3)
             return to;
@@ -109,42 +110,45 @@ namespace cg
             auto it = faces.begin();
             for (; it != faces.end() && !faceContains(**it, p); it++);
             face_2t<Scalar> t = **it;
-            face_2t<Scalar> t1, t2, t3;
-            t1 = face_2t<Scalar>(t[0], t[1], p);
-            t1.addTwins(t.twin(0), &t2, &t3);
+            face_2t<Scalar> *t1, *t2, *t3;
+            t1 = new face_2t<Scalar>(t[0], t[1], p);
+            t1->addTwins(t.twin(0), t2, t3);
             if (t.isInf)
             {
-                t2 = face_2t<Scalar>(p, t[1]);
-                t3 = face_2t<Scalar>(t[0], p);
-                t2.addTwins(&t1, t.twin(1), &t3);
-                t3.addTwins(&t1, &t2, t.twin(2));
+                t2 = new face_2t<Scalar>(p, t[1]);
+                t3 = new face_2t<Scalar>(t[0], p);
+                t2->addTwins(t1, t.twin(1), t3);
+                t3->addTwins(t1, t2, t.twin(2));
             } else
             {
-                t2 = face_2t<Scalar>(t[1], t[2], p);
-                t3 = face_2t<Scalar>(t[2], t[0], p);
-                t2.addTwins(t.twin(1), &t3, &t1);
-                t3.addTwins(t.twin(2), &t1, &t2);
+                t2 = new face_2t<Scalar>(t[1], t[2], p);
+                t3 = new face_2t<Scalar>(t[2], t[0], p);
+                t2->addTwins(t.twin(1), t3, t1);
+                t3->addTwins(t.twin(2), t1, t2);
             }
-            t.twin(0)->replaceTwin(t, &t1);
-            t.twin(1)->replaceTwin(t, &t2);
-            t.twin(2)->replaceTwin(t, &t3);
+            t.twin(0)->replaceTwin(t, t1);
+            t.twin(1)->replaceTwin(t, t2);
+            t.twin(2)->replaceTwin(t, t3);
 
-            flip(t1, *(t1.twin(0)), 0);
-            flip(t2, *(t2.twin(0)), 0);
-            flip(t3, *(t3.twin(0)), 0);
+            flip(*t1, *(t1->twin(0)), 0);
+            flip(*t2, *(t2->twin(0)), 0);
+            flip(*t3, *(t3->twin(0)), 0);
 
-            *it = &t1;
-            faces.push_back(&t2);
-            faces.push_back(&t3);
+            *it = t1;
+            faces.push_back(t2);
+            faces.push_back(t3);
 
             std::cout << "\nout:\n";
             for (auto it : faces)
                 it->writeln();
-            std::cout << "end\n";
+            std::cout << "end\n\n";
         }
         for (auto it : faces)
             if (!it->isInf)
                 to.push_back(*it);
+//        for (auto it = faces.begin(); it != faces.end(); it++)
+  //          delete(*it);
+        faces.clear();
         return to;
     }
 } //namespace cg;
