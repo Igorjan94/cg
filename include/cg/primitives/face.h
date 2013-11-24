@@ -155,6 +155,7 @@ namespace cg
     template<class Scalar>
     void flip(face_2t<Scalar> &f, face_2t<Scalar> &g, int i1)
     {
+        i1 %= 3;
         if (!g.isInf && !f.isInf)
         {
             int i2 = 0;
@@ -181,6 +182,11 @@ namespace cg
                 f.setTwin(i1, g.twin(i2 + 2));
                 g.setTwin(i2 + 2, f);
                 f.setTwin(i1 + 1, g);
+
+                flip(f, *(f.twin(i1)),     i1);
+                flip(f, *(f.twin(i1 + 2)), i1 + 2);
+                flip(g, *(f.twin(i2)),     i2);
+                flip(g, *(f.twin(i2 + 1)), i2 + 1);
             }
         }
     }
