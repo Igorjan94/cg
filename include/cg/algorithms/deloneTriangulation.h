@@ -14,74 +14,11 @@ using std::vector;
 
 namespace cg
 {
-    template<class Scalar, class Iter>
-    void addPoint(Iter it, point_2t<Scalar> p, vector<face_2t<Scalar>*> &faces)
-    {
-        face_2t<Scalar> t = **it;
-        face_2t<Scalar> t1, t2, t3;
-        t1 = face_2t<Scalar>(t[0], t[1], p);
-        if (t.isInf)
-        {
-            t2 = face_2t<Scalar>(p, t[1]);
-            t3 = face_2t<Scalar>(t[0], p);
-            t1.addTwins(t.twin(0), &t2, &t3);
-            t2.addTwins(&t1, t.twin(1), &t3);
-            t3.addTwins(&t1, &t2, t.twin(2));
-        } else
-        {
-            t2 = face_2t<Scalar>(t[1], t[2], p);
-            t3 = face_2t<Scalar>(t[2], t[0], p);
-            t1.addTwins(t.twin(0), &t2, &t3);
-            t2.addTwins(t.twin(1), &t3, &t1);
-            t3.addTwins(t.twin(2), &t1, &t2);
-        }
-        t.twin(0)->replaceTwin(t, &t1);
-        t.twin(1)->replaceTwin(t, &t2);
-        t.twin(2)->replaceTwin(t, &t3);
-
-
-        //faces[faces.size() - 3]->writeln2();
-//        flip(t1, *(t1.twin(0)), 0);
-  //      flip(t2, *(t2.twin(0)), 0);
-    //    flip(t3, *(t3.twin(0)), 0);
-//        tt1 = &t1;
-  //      tt2 = &t2;
-    //    tt3 = &t3;
-        *it = &t1;
-        faces.push_back(&t2);
-        faces.push_back(&t3);
-
-        /*(*it)->writeln2();
-        faces[faces.size() - 2]->writeln2();
-        faces[faces.size() - 1]->writeln2();*/
-        for (auto it : faces)
-        {
-            std::cout << "debug in add: ";
-            it->writeln();
-        }
-
-        for (int index = faces.size() - 2; index < faces.size(); index++)
-            flip(*faces[index], *faces[index]->twin(0), 0);
-    }
-
-    template<class Scalar>
-    void addPointInTriangulation(point_2t<Scalar> &p, vector<face_2t<Scalar>*> &faces)
-    {
-
-    }
-
     template<class Scalar>
     vector<face_2t<Scalar>> deloneTriangulation(vector<point_2t<Scalar>> &points)
     {
         vector<face_2t<Scalar>*> faces;
         vector<face_2t<Scalar>> to;
-/*        points.clear();
-        points.push_back({-150, -150});
-        points.push_back({0, 150});
-        points.push_back({150, -150});
-        points.push_back({100, 50});
-        points.push_back({0, -50});
-*/
         int sz = points.size();
         if (sz < 3)
             return to;

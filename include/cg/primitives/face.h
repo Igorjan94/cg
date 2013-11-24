@@ -138,11 +138,6 @@ namespace cg
         if (isInf)
         {
             point_2t<Scalar> temp = b == point_2t<Scalar>({0.0, 0.0}) ? c : b;
-            std::cout << "all is ok\n";
-            std::cout << d.x << " " << d.y << "\n";
-            std::cout << temp.x << " " << temp.y << "\n";
-            std::cout << a.x << " " << a.y << "\n";
-            std::cout << "all is ok>\n";
             return orientation(d, temp, a) == CG_RIGHT;
         }
         Scalar a00 = (a.x - d.x);
@@ -172,9 +167,6 @@ namespace cg
     {
         if (!(g.isInf ^ f.isInf))
         {
-            f.writeln();
-            g.writeln();
-            std::cout << "infinity: " << ((int)(g.isInf)) << "\n";
             int i2 = -1;
             for (int i = 0; i < 3; i++)
             {
@@ -224,9 +216,3 @@ namespace cg
         }
     }
 }
-/*-150, -150
- *-5, 170
- *200, 130
- *120, 10
- *
- */
