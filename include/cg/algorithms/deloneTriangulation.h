@@ -22,7 +22,9 @@ namespace cg
         int sz = points.size();
         if (sz < 3)
             return to;
-        if (cg::orientation(points[0], points[1], points[2]) == cg::CG_LEFT)
+        if (cg::orientation(points[0], points[1], points[2]) == cg::CG_LEFT ||
+            cg::orientation(points[0], points[1], points[2]) == cg::CG_COLLINEAR &&
+            cg::collinear_are_ordered_along_line(points[0], points[2], points[1]))
         {
             printf("orientation changed\n");
             point_2t<Scalar> p = points[1];
@@ -71,6 +73,18 @@ namespace cg
             flip(*(t2->twin(1)), *t2);
             flip(*t3, *(t3->twin(2)));
         }
+        bool all = true;
+        for (auto i : faces)
+        {
+            bool ok = true;
+            for (auto j : faces)
+                if (i != j && !i->isInf)
+                    for (int k = 0; k < 3 - (int)j->isInf; k++)
+                        ok &= !cg::inCircle((*i)[0], (*i)[1], (*i)[2], (*j)[k], false);
+            all &= ok;
+        }
+        if (!all)
+            std::cout << "epic fail------------------------------------------------\n";
         for (auto it : faces)
             if (!it->isInf)
                 to.push_back(*it);

@@ -158,7 +158,7 @@ namespace cg
     bool faceContains(face_2t<Scalar>& f, point_2t<Scalar>& p)
     {
         if (f.isInf)
-            return cg::orientation(f[0], f[1], p) == cg::CG_RIGHT;
+            return cg::orientation(f[0], f[1], p) != cg::CG_LEFT;
         return cg::contains(f.triangle(), p);
     }
 
@@ -167,35 +167,26 @@ namespace cg
     {
         if (!(g.isInf ^ f.isInf))
         {
-            int i2 = -1;
+            int i2 = -1, i1 = -1;
             for (int i = 0; i < 3; i++)
             {
                 bool ok = false;
+                bool ok1 = false;
                 for (int j = 0; j < 3; j++)
+                {
                     ok |= g[i] == f[j];
+                    ok1 |= g[j] == f[i];
+                }
                 if (!ok)
-                {
                     i2 = i;
-                    break;
-                }
-            }
-            int i1 = -1;
-            for (int i = 0; i < 3; i++)
-            {
-                bool ok = false;
-                for (int j = 0; j < 3; j++)
-                    ok |= g[j] == f[i];
-                if (!ok)
-                {
+                if (!ok1)
                     i1 = i;
-                    break;
-                }
             }
             if (i1 != -1 && i2 != -1 && inCircle(f[i1], f[i1 + 1], f[i1 + 2], g[i2], g.isInf))
             {
-                std::cout << "f::i1= " << f[i1].x << " " << f[i1].y << "\n";
+                /*std::cout << "f::i1= " << f[i1].x << " " << f[i1].y << "\n";
                 std::cout << "g::i2= " << g[i2].x << " " << g[i2].y << "\n";
-                std::cout << "flipping...\n";
+                std::cout << "flipping...\n";*/
                 g[i2 + 2] = f[i1];
                 f[i1 + 2] = g[i2];
                 if (g.isInf)
