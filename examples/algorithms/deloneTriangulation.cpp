@@ -129,7 +129,19 @@ void drawTriangles(Iter a, Iter c, cg::visualization::drawer_type & drawer) cons
 
     bool on_press(const point_2f & p)
     {
-        input_points.push_back(p);
+        switch (c)
+        {
+            case 1:input_points.push_back({-400, 0});break;
+            case 2:input_points.push_back({400, 0}); break;
+            case 3:input_points.push_back({50, 0}); break;
+            case 4:input_points.push_back({250, 0}); break;
+            case 5:input_points.push_back({-100, 0}); break;
+    //        case 6:input_points.push_back({500, 0}); break;
+      //      case 7:input_points.push_back({-500, 0}); break;
+            //case 8:input_points.push_back({-100, -100}); break;
+            default: input_points.push_back(p);break;
+        }
+        c++;
         output_points.clear();
         output_points = cg::deloneTriangulation(input_points);
         return true;
@@ -155,6 +167,7 @@ void drawTriangles(Iter a, Iter c, cg::visualization::drawer_type & drawer) cons
 private:
     std::vector<point_2f> input_points;
     std::vector<face_2f> output_points;
+    int c = 1;
 };
 
 int main(int argc, char ** argv)

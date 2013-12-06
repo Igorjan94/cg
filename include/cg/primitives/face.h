@@ -89,9 +89,9 @@ namespace cg
             twins[2] = t3;
         }
 
-        void notInf()
+        void setInf(bool set)
         {
-            isInf = false;
+            isInf = set;
         }
 
         void replaceTwin(face_2t<Scalar> from, face_2t<Scalar> *to)
@@ -140,6 +140,11 @@ namespace cg
             point_2t<Scalar> temp = b == point_2t<Scalar>({0.0, 0.0}) ? c : b;
             return orientation(d, temp, a) == CG_RIGHT;
         }
+        if (cg::orientation(a, b, c) == cg::CG_COLLINEAR)
+//            if (cg::orientation(a, b, d) == cg::CG_COLLINEAR)
+  //              return cg::contains({a, b, c}, d);
+    //        else
+                return true;
         Scalar a00 = (a.x - d.x);
         Scalar a01 = (a.y - d.y);
         Scalar a02 = (a.x * a.x - d.x * d.x) + (a.y * a.y - d.y * d.y);
@@ -158,14 +163,18 @@ namespace cg
     bool faceContains(face_2t<Scalar>& f, point_2t<Scalar>& p)
     {
         if (f.isInf)
-            return cg::orientation(f[0], f[1], p) != cg::CG_LEFT;
+            return cg::orientation(f[0], f[1], p) == cg::CG_RIGHT;
+        if (cg::orientation(f[0], f[1], f[2]) == cg::CG_COLLINEAR)
+            return false;
         return cg::contains(f.triangle(), p);
     }
 
     template<class Scalar>
     void flip(face_2t<Scalar> &f, face_2t<Scalar> &g)
     {
-        if (!(g.isInf ^ f.isInf))
+        bool isCollinear = (cg::orientation(f[0], f[1], f[2]) == cg::CG_COLLINEAR) && g.isInf && !f.isInf;
+
+        if (!(g.isInf ^ f.isInf) || isCollinear)
         {
             int i2 = -1, i1 = -1;
             for (int i = 0; i < 3; i++)
@@ -182,15 +191,23 @@ namespace cg
                 if (!ok1)
                     i1 = i;
             }
-            if (i1 != -1 && i2 != -1 && inCircle(f[i1], f[i1 + 1], f[i1 + 2], g[i2], g.isInf))
+            if (isCollinear)
+                i2 = 2;
+
+            if (i1 != -1 && i2 != -1 &&
+                (inCircle(f[i1], f[i1 + 1], f[i1 + 2], g[i2], g.isInf) || isCollinear))
             {
-                /*std::cout << "f::i1= " << f[i1].x << " " << f[i1].y << "\n";
-                std::cout << "g::i2= " << g[i2].x << " " << g[i2].y << "\n";
-                std::cout << "flipping...\n";*/
+                if (isCollinear)
+                {
+                    g.setInf(true);
+                    f.setInf(true);
+                } else
+                    if (g.isInf)
+                        g.setInf(false);
+
                 g[i2 + 2] = f[i1];
                 f[i1 + 2] = g[i2];
-                if (g.isInf)
-                    g.notInf();
+
                 g.twin(i2 + 2)->replaceTwin(g, &f);
                 f.twin(i1 + 2)->replaceTwin(f, &g);
 
@@ -199,10 +216,33 @@ namespace cg
                 g.setTwin(i2 + 2, f);
                 f.setTwin(i1 + 2, g);
 
-                flip(*(f.twin(i1)), f);
-                flip(f, *(f.twin(i1 + 1)));
-                flip(g, *(g.twin(i2)));
-                flip(g, *(g.twin(i2 + 1)));
+                if (isCollinear && (i1 != 0))
+                {
+                    std::swap(f[i1], f[0]);
+                    std::swap(f[1], f[2]);
+                    face_2t<Scalar> *t = f.twin(i1);
+                    f.setTwin(i1, f.twin(0));
+                    f.setTwin(0, t);
+
+                    t = f.twin(1);
+                    f.setTwin(1, f.twin(2));
+                    f.setTwin(2, t);
+                    i1 = 0;
+                }
+                if (!isCollinear)
+                {
+                    flip(*(f.twin(i1)), f);
+                    flip(f, *(f.twin(i1 + 1)));
+                    flip(*(g.twin(i2)), g);
+                    flip(g, *(g.twin(i2 + 1)));
+                }
+                else
+                {
+                    flip(f, *(f.twin(i1)));
+                    flip(*(f.twin(i1 + 1)), f);
+                    flip(g, *(g.twin(i2)));
+                    flip(*(g.twin(i2 + 1)), g);
+                }
             }
         }
     }

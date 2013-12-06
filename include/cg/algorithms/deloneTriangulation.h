@@ -19,17 +19,27 @@ namespace cg
     {
         vector<face_2t<Scalar>*> faces;
         vector<face_2t<Scalar>> to;
+        faces.clear();
+        to.clear();
         int sz = points.size();
         if (sz < 3)
             return to;
-        if (cg::orientation(points[0], points[1], points[2]) == cg::CG_LEFT ||
-            cg::orientation(points[0], points[1], points[2]) == cg::CG_COLLINEAR &&
-            cg::collinear_are_ordered_along_line(points[0], points[2], points[1]))
+        int i = 2;
+        while ((i < sz) && (cg::orientation(points[0], points[1], points[i]) == cg::CG_COLLINEAR))
+            i++;
+        if (i == sz)
+        {
+            std::cout << "one line\n";
+            for (int j = 0; j < sz - 2; j++)
+                to.push_back(face_2t<Scalar>(points[j], points[j + 1], points[j + 2]));
+            return to;
+        }
+        if (i != 2)
+            std::swap(points[i], points[2]);
+        if (cg::orientation(points[0], points[1], points[2]) == cg::CG_LEFT)
         {
             printf("orientation changed\n");
-            point_2t<Scalar> p = points[1];
-            points[1] = points[2];
-            points[2] = p;
+            std::swap(points[1], points[2]);
         }
         faces.push_back(new face_2t<Scalar>(points[0], points[1], points[2]));
         faces.push_back(new face_2t<Scalar>(points[1], points[0]));
@@ -76,9 +86,10 @@ namespace cg
         bool all = true;
         for (auto i : faces)
         {
+            i->writeln();
             bool ok = true;
             for (auto j : faces)
-                if (i != j && !i->isInf)
+                if (i != j && !i->isInf && cg::orientation((*i)[0], (*i)[1], (*i)[2]) != cg::CG_COLLINEAR)
                     for (int k = 0; k < 3 - (int)j->isInf; k++)
                         ok &= !cg::inCircle((*i)[0], (*i)[1], (*i)[2], (*j)[k], false);
             all &= ok;
