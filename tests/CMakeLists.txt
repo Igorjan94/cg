@@ -13,10 +13,11 @@ include_directories(${Boost_INCLUDE_DIRS})
 link_directories(${Boost_LIBRARYDIR})
 
 set(SOURCES
-   orientation.cpp
-   has_intersection.cpp
-   contains.cpp
-   convex_hull.cpp
+#   orientation.cpp
+#   has_intersection.cpp
+#   contains.cpp
+#   convex_hull.cpp
+   delone.cpp
 )
 
 add_executable(cg-test ${SOURCES})

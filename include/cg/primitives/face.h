@@ -6,6 +6,8 @@
 #include "cg/primitives/point.h"
 #include "cg/operations/orientation.h"
 #include "cg/operations/contains/triangle_point.h"
+#include <boost/numeric/interval.hpp>
+#include <gmpxx.h>
 
 using cg::point_2t;
 using cg::triangle_2t;
@@ -131,6 +133,24 @@ namespace cg
         }
     };
 
+    template<class Scalar, class Scalar2>
+    Scalar2 inCircle2(point_2t<Scalar> const &a, point_2t<Scalar> const &b, point_2t<Scalar> const &c,
+                  point_2t<Scalar> const &d, Scalar2 x)
+    {
+        Scalar2 a00 = (a.x - d.x);
+        Scalar2 a01 = (a.y - d.y);
+        Scalar2 a02 = (a.x * a.x - d.x * d.x) + (a.y * a.y - d.y * d.y);
+        Scalar2 a10 = (b.x - d.x);
+        Scalar2 a11 = (b.y - d.y);
+        Scalar2 a12 = (b.x * b.x - d.x * d.x) + (b.y * b.y - d.y * d.y);
+        Scalar2 a20 = (c.x - d.x);
+        Scalar2 a21 = (c.y - d.y);
+        Scalar2 a22 = (c.x * c.x - d.x * d.x) + (c.y * c.y - d.y * d.y);
+        Scalar2 det =  a00 * a11 * a22 + a01 * a12 * a20 + a02 * a10 * a21 -
+                     (a20 * a11 * a02 + a21 * a12 * a00 + a01 * a10 * a22);
+        return det;
+    }
+
     template<class Scalar>
     bool inCircle(point_2t<Scalar> const &a, point_2t<Scalar> const &b, point_2t<Scalar> const &c,
                   point_2t<Scalar> const &d, bool isInf)
@@ -141,22 +161,20 @@ namespace cg
             return orientation(d, temp, a) == CG_RIGHT;
         }
         if (cg::orientation(a, b, c) == cg::CG_COLLINEAR)
-//            if (cg::orientation(a, b, d) == cg::CG_COLLINEAR)
-  //              return cg::contains({a, b, c}, d);
-    //        else
-                return true;
-        Scalar a00 = (a.x - d.x);
-        Scalar a01 = (a.y - d.y);
-        Scalar a02 = (a.x * a.x - d.x * d.x) + (a.y * a.y - d.y * d.y);
-        Scalar a10 = (b.x - d.x);
-        Scalar a11 = (b.y - d.y);
-        Scalar a12 = (b.x * b.x - d.x * d.x) + (b.y * b.y - d.y * d.y);
-        Scalar a20 = (c.x - d.x);
-        Scalar a21 = (c.y - d.y);
-        Scalar a22 = (c.x * c.x - d.x * d.x) + (c.y * c.y - d.y * d.y);
-        Scalar det =  a00 * a11 * a22 + a01 * a12 * a20 + a02 * a10 * a21 -
-                     (a20 * a11 * a02 + a21 * a12 * a00 + a01 * a10 * a22);
-        return det < 0;
+            return true;
+        Scalar p = inCircle2(a, b, c, d, a.x);
+        Scalar eps = 10 * std::numeric_limits<Scalar>::epsilon();
+        if (abs(p) > eps)
+            return p < 0;
+        typedef boost::numeric::interval_lib::unprotect<boost::numeric::interval<double> >::type interval;
+        boost::numeric::interval<double>::traits_type::rounding _;
+        interval p1 = inCircle2(a, b, c, d, (interval) 1);
+        if (p1.lower() < 0)
+            return true;
+        if (p1.upper() > 0)
+            return false;
+        mpq_class p2 = inCircle2(a, b, c, d, (mpq_class) 1);
+        return p2 < 0;
     }
 
     template<class Scalar>
@@ -194,8 +212,7 @@ namespace cg
             if (isCollinear)
                 i2 = 2;
 
-            if (i1 != -1 && i2 != -1 &&
-                (inCircle(f[i1], f[i1 + 1], f[i1 + 2], g[i2], g.isInf) || isCollinear))
+            if (i1 != -1 && i2 != -1 && (inCircle(f[i1], f[i1 + 1], f[i1 + 2], g[i2], g.isInf) || isCollinear))
             {
                 if (isCollinear)
                 {
@@ -220,6 +237,7 @@ namespace cg
                 {
                     std::swap(f[i1], f[0]);
                     std::swap(f[1], f[2]);
+
                     face_2t<Scalar> *t = f.twin(i1);
                     f.setTwin(i1, f.twin(0));
                     f.setTwin(0, t);
@@ -227,6 +245,7 @@ namespace cg
                     t = f.twin(1);
                     f.setTwin(1, f.twin(2));
                     f.setTwin(2, t);
+
                     i1 = 0;
                 }
                 if (!isCollinear)

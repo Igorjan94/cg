@@ -131,11 +131,16 @@ void drawTriangles(Iter a, Iter c, cg::visualization::drawer_type & drawer) cons
     {
         switch (c)
         {
-            case 1:input_points.push_back({-400, 0});break;
-            case 2:input_points.push_back({400, 0}); break;
-            case 3:input_points.push_back({50, 0}); break;
-            case 4:input_points.push_back({250, 0}); break;
-            case 5:input_points.push_back({-100, 0}); break;
+            case 1:
+            {
+                for (int i = 0; i < 10; i++)
+                    input_points.push_back({0, rand() % 200 * 1000});
+                break;
+            }
+//            case 2:input_points.push_back({-1000, -1000}); break;
+  //          case 3:input_points.push_back({0, 1000}); break;
+    //        case 4:input_points.push_back({1000, -1000}); break;
+      //      case 5:input_points.push_back({-150, 0}); break;
     //        case 6:input_points.push_back({500, 0}); break;
       //      case 7:input_points.push_back({-500, 0}); break;
             //case 8:input_points.push_back({-100, -100}); break;
