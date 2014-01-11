@@ -96,6 +96,19 @@ namespace cg
       return res;
    }
 
+   // в этом месте возможно переполнение!
+   template <class Scalar>
+   point_2t<Scalar> operator + (point_2t<Scalar> pt, point_2t<Scalar> delta)
+   {
+      return point_2t<Scalar>(pt.x + delta.x, pt.y + delta.y);
+   }
+
+   template <class Scalar>
+   point_2t<Scalar> operator - (point_2t<Scalar> pt)
+   {
+      return point_2t<Scalar>(-pt.x, -pt.y);
+   }
+
    template <class Scalar>
    Scalar dist_2(point_2t<Scalar> const& a, point_2t<Scalar> const& b)
    {

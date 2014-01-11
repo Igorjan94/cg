@@ -134,7 +134,7 @@ void drawTriangles(Iter a, Iter c, cg::visualization::drawer_type & drawer) cons
             case 1:
             {
                 for (int i = 0; i < 10; i++)
-                    input_points.push_back({0, rand() % 200 * 1000});
+                    input_points.push_back({0, (float) (rand() % 200 * 1000)});
                 break;
             }
 //            case 2:input_points.push_back({-1000, -1000}); break;

@@ -13,3 +13,6 @@ target_link_libraries(shortestPath visualization ${GMP_LIBRARIES})
 
 add_executable(deloneTriangulation deloneTriangulation.cpp)
 target_link_libraries(deloneTriangulation visualization ${GMP_LIBRARIES})
+
+add_executable(minkowskiSum minkowskiSum.cpp)
+target_link_libraries(minkowskiSum visualization ${GMP_LIBRARIES})
