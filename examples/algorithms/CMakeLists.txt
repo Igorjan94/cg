@@ -16,3 +16,6 @@ target_link_libraries(deloneTriangulation visualization ${GMP_LIBRARIES})
 
 add_executable(minkowskiSum minkowskiSum.cpp)
 target_link_libraries(minkowskiSum visualization ${GMP_LIBRARIES})
+
+add_executable(triangleIntersection triangleIntersection.cpp)
+target_link_libraries(triangleIntersection visualization ${GMP_LIBRARIES})

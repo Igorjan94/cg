@@ -71,7 +71,8 @@ namespace cg
    }
 
    // c is ordinary contour
-   inline bool contains(contour_2 const& contour, point_2 const& val)
+   template<class Scalar>
+   inline bool contains(contour_2t<Scalar> const& contour, point_2t<Scalar> const& val)
    {
       auto circulator = contour.circulator();
       int intersection_count = 0;
