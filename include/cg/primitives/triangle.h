@@ -11,6 +11,7 @@ namespace cg
    struct triangle_2t;
 
    typedef triangle_2t<double> triangle_2;
+   typedef triangle_2t<float> triangle_2f;
 
    template <class Scalar>
    struct triangle_2t

@@ -17,7 +17,7 @@ namespace cg
 
       if (to == CG_COLLINEAR)
       {
-         segment_2 s(*std::min_element(&t[0], &t[0] + 3),
+         segment_2t<Scalar> s(*std::min_element(&t[0], &t[0] + 3),
                      *std::max_element(&t[0], &t[0] + 3));
 
          return contains(s, q);

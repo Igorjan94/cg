@@ -9,7 +9,6 @@
 #include <cg/io/point.h>
 
 #include <cg/primitives/point.h>
-#include <cg/convex_hull/graham.h>
 #include <cg/convex_hull/andrews.h>
 
 using cg::point_2f;
@@ -45,7 +44,7 @@ struct graham_viewer : cg::visualization::viewer_adapter
    bool on_release(const point_2f & p)
    {
       pts_.push_back(p);
-      ch_size_ = std::distance(pts_.begin(), cg::graham_hull(pts_.begin(), pts_.end()));
+      ch_size_ = std::distance(pts_.begin(), cg::andrews(pts_.begin(), pts_.end()));
       return true;
    }
 

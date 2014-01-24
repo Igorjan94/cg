@@ -22,5 +22,5 @@ include_directories(include ${Boost_INCLUDE_DIR} ${GMP_INCLUDE_DIR})
 
 add_subdirectory(include)
 add_subdirectory(src)
-add_subdirectory(tests)
+#add_subdirectory(tests)
 add_subdirectory(examples)
