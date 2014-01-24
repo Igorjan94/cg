@@ -17,20 +17,19 @@ namespace cg
     template<class Scalar>
     void reverse(contour_2t<Scalar>& a)
     {
-        if (cg::orientation(a[0], a[1], a[2]) == CG_RIGHT)
-        {
-            contour_2t<Scalar> a1;
-            for (int i = a.size() - 1; i >= 0; i--)
-                a1.add_point(a[i]);
-            a = a1;
-        }
+        contour_2t<Scalar> a1;
+        for (int i = a.size() - 1; i >= 0; i--)
+            a1.add_point(a[i]);
+        a = a1;
     }
 
     template<class Scalar>
     contour_2t<Scalar> minkowskiSum(contour_2t<Scalar>& a, contour_2t<Scalar>& b)
     {
-        reverse(a);
-        reverse(b);
+        if (cg::orientation(a[0], a[1], a[2]) == CG_RIGHT)
+            reverse(a);
+        if (cg::orientation(b[0], b[1], b[2]) == CG_RIGHT)
+            reverse(b);
         contour_2t<Scalar> c;
         int i, j, k;
         for (i = k = 0; k < a.size(); k++)
