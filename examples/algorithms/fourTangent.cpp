@@ -6,7 +6,6 @@
 
 #include <cg/primitives/contour.h>
 #include <cg/primitives/point.h>
-#include <cg/algorithms/minkowskiSum.h>
 #include <cg/algorithms/fourTangent.h>
 
 using cg::point_2;
