@@ -20,5 +20,11 @@ project(algorithms)
 #add_executable(triangleIntersection triangleIntersection.cpp)
 #target_link_libraries(triangleIntersection visualization ${GMP_LIBRARIES})
 
-add_executable(fourTangent fourTangent.cpp)
-target_link_libraries(fourTangent visualization ${GMP_LIBRARIES})
+#add_executable(fourTangent fourTangent.cpp)
+#target_link_libraries(fourTangent visualization ${GMP_LIBRARIES})
+
+#add_executable(sphere sphere.cpp)
+#target_link_libraries(sphere visualization ${GMP_LIBRARIES})
+
+add_executable(distanceTwoPoligons distanceTwoPoligons.cpp)
+target_link_libraries(distanceTwoPoligons visualization ${GMP_LIBRARIES})
