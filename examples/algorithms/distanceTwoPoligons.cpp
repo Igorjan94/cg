@@ -57,7 +57,7 @@ struct fourTangent_viewer : cg::visualization::viewer_adapter
 
     void print(cg::visualization::printer_type & p) const
     {
-        p.corner_stream() << "minkowski sum of two convex contour." << cg::visualization::endl;
+        p.corner_stream() << "Distance between two convex contours." << cg::visualization::endl;
         p.corner_stream() << "Double click to clear, right-click to add point.";
     }
 
@@ -118,5 +118,5 @@ int main(int argc, char ** argv)
 {
     QApplication app(argc, argv);
     fourTangent_viewer viewer;
-    cg::visualization::run_viewer(&viewer, "fourTangent");
+    cg::visualization::run_viewer(&viewer, "Distance between two convex poligons");
 }

@@ -17,17 +17,11 @@ using std::vector;
 namespace cg
 {
     template<class Scalar>
-    Scalar projection(point_2t<Scalar> p, segment_2t<Scalar> seg)
+    Scalar projection(point_2t<Scalar> p, segment_2t<Scalar> segment)
     {
-        auto v = p - seg[0];
-        auto s = seg[1] - seg[0];
+        auto v = p - segment[0];
+        auto s = segment[1] - segment[0];
         return (v * s) / (s * s);
-    }
-
-    template<class Scalar>
-    bool less(cg::point_2t<Scalar> const &a, cg::point_2t<Scalar> const &b, cg::point_2t<Scalar> const &c, cg::point_2t<Scalar> const &d)
-    {
-        return orientation(a, b, c, d) != CG_RIGHT;
     }
 
     template<class Scalar>
@@ -40,16 +34,16 @@ namespace cg
     void updateAnswer(contour_2t<Scalar> const& contour, point_2t<Scalar> const& point, int& index, std::pair<point_2t<Scalar>, point_2t<Scalar>>& ans)
     {
         segment_2t<Scalar> seg(contour[index], contour[index + 1]);
-        auto pr = projection(point, seg);
+        Scalar pr = projection(point, seg);
         if (pr >= 0 && pr <= 1)
         {
-            auto proj = seg[0] + pr * (seg[1] - seg[0]);
+            cg::point_2t<Scalar> proj = seg[0] + pr * (seg[1] - seg[0]);
             if (compare_dist(proj, point, ans.first, ans.second))
-                ans = std::make_pair(proj, point);
+                ans = {proj, point};
         }
         index = next(contour, index);
         if (compare_dist(contour[index], point, ans.first, ans.second))
-            ans = std::make_pair(contour[index], point);
+            ans = {contour[index], point};
     }
 
     template<class Scalar>
@@ -74,8 +68,8 @@ namespace cg
         {
             if (compare_dist(a[i], b[j], ans.first, ans.second))
                 ans = std::make_pair(a[i], b[j]);
-            bool less1 = less(a[i], a[i + 1], b[j + 1], b[j]);
-            bool less2 = less(a[i], a[i + 1], b[j], b[j + 1]);
+            bool less1 = orientation(a[i], a[i + 1], b[j + 1], b[j]) != CG_RIGHT;
+            bool less2 = orientation(a[i], a[i + 1], b[j], b[j + 1]) != CG_RIGHT;
             if (less1)
                 updateAnswer(a, b[j], i, ans);
             if (less2)
