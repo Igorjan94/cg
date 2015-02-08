@@ -5,8 +5,8 @@ project(algorithms)
 #add_executable(douglasPeucker douglasPeucker.cpp)
 #target_link_libraries(douglasPeucker visualization ${GMP_LIBRARIES})
 
-#add_executable(visibilityGraph visibilityGraph.cpp)
-#target_link_libraries(visibilityGraph visualization ${GMP_LIBRARIES})
+add_executable(visibilityGraph visibilityGraph.cpp)
+target_link_libraries(visibilityGraph visualization ${GMP_LIBRARIES})
 
 #add_executable(shortestPath shortestPath.cpp)
 #target_link_libraries(shortestPath visualization ${GMP_LIBRARIES})
@@ -26,5 +26,8 @@ project(algorithms)
 #add_executable(sphere sphere.cpp)
 #target_link_libraries(sphere visualization ${GMP_LIBRARIES})
 
-add_executable(distanceTwoPoligons distanceTwoPoligons.cpp)
-target_link_libraries(distanceTwoPoligons visualization ${GMP_LIBRARIES})
+#add_executable(distanceTwoPoligons distanceTwoPoligons.cpp)
+#target_link_libraries(distanceTwoPoligons visualization ${GMP_LIBRARIES})
+
+#add_executable(persistent_list persistent_list.cpp)
+#target_link_libraries(persistent_list)

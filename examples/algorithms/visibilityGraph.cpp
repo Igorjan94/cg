@@ -18,13 +18,13 @@ using cg::contour_2f;
 using cg::point_2f;
 
 template <class Iter>
-void draw_vector(Iter a, Iter c, cg::visualization::drawer_type & drawer)
+void draw_vector(Iter a, Iter c, cg::visualization::drawer_type & drawer, double width = 1)
 {
     if (a == c)
         return;
     Iter b = a + 1;
     for (; b != c; a++, b++)
-        drawer.draw_line(*a, *b);
+        drawer.draw_line(*a, *b, width);
 }
 
 template <class Iter>
@@ -49,12 +49,12 @@ struct visibilityGraph_viewer : cg::visualization::viewer_adapter
 
     void draw(cg::visualization::drawer_type & drawer) const
     {
-        drawer.set_color(Qt::white);
-        for (unsigned int i = 0; i < input_points.size(); i++)
-            draw_vector(input_points[i].begin(), input_points[i].end(), drawer);
-        draw_vector(contour.begin(), contour.end(), drawer);
         drawer.set_color(Qt::yellow);
         draw_vector_of_segments(output_points.begin(), output_points.end(), drawer);
+        drawer.set_color(Qt::white);
+        for (unsigned int i = 0; i < input_points.size(); i++)
+            draw_vector(input_points[i].begin(), input_points[i].end(), drawer, 3);
+        draw_vector(contour.begin(), contour.end(), drawer, 3);
     }
 
     void print(cg::visualization::printer_type & p) const
@@ -72,7 +72,7 @@ struct visibilityGraph_viewer : cg::visualization::viewer_adapter
             input_points.push_back(contour);
             output_points.clear();
             contour.clear();
-            output_points = cg::visibilityGraph(input_points.begin(), input_points.end(), 5.0f);
+            output_points = cg::visibilityGraph(input_points);
         } else
             contour.add_point(p);
         return true;
