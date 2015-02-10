@@ -7,7 +7,7 @@
 #include <cg/primitives/contour.h>
 #include <cg/operations/has_intersection/segment_segment.h>
 
-//I know it is very vad, but it is simple to write. p -- point, s -- segment. and scalar
+//I know it is very bad, but it is simple to write. p -- point, s -- segment. and scalar
 #define ps point_2t<Scalar>
 #define ss segment_2t<Scalar>
 
